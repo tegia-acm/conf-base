@@ -1,0 +1,107 @@
+{
+	"name": "base",
+	"path": "{CONFIGURATION_FOLDER}",
+	"loads":
+	[
+		"A2Scheduler",
+		"A2Events",
+		"A2Files",
+		"A2Mailer",
+		"A2Names",
+		"A2Sphinx"
+	],
+	"actors":
+	[
+		{
+			"type": "A2Scheduler",
+			"name": "scheduler"
+		},
+		{
+			"type": "A2Events",
+			"name": "events"
+		},
+		{
+			"type": "A2Files",
+			"name": "files"
+		},
+		{
+			"type": "A2Mailer",
+			"name": "base/mail",
+			"data":
+			{
+				"emails":
+				[
+					{
+						"email": "noreply@my-check.ru",
+						"smpt":
+						{
+							"server": "smtps://smtp.yandex.ru:465",
+							"password": ""
+						},
+						"app.sendgrid.com":
+						{
+							"api_key": ""
+						}
+					}
+				],
+				"templates":
+				[
+					{
+						"name": "mycheck-order",
+						"type": "smtp"
+					},
+					{
+						"name": "mycheck_email_confirm",
+						"type": "sendgrid",
+						"id": ""
+					}
+				]
+			}
+		},
+		{
+			"type": "A2Names",
+			"name": "base/names"
+		},
+		{
+			"type": "A2Sphinx",
+			"name": "base/sphinx"
+		}
+	],
+	"init":
+	[
+		{
+			"actor": "scheduler",
+			"action": "/run",
+			"message":
+			{    }
+		}
+	],
+	"db":
+	[
+		{
+			"database" :
+			{
+				"dbname" : "tegia_core",
+				"host" : "{MYSQL_HOST}",
+				"password" : "{MYSQL_PASSWORD}",
+				"port" : {MYSQL_PORT},
+				"user" : "{MYSQL_USER}"
+			},
+			"max_connections" : 10,
+			"name" : "core"
+		},
+		{
+			"database" :
+			{
+				"dbname" : "",
+				"host" : "127.0.0.1",
+				"password" : "",
+				"port" : 9306,
+				"user" : ""
+			},
+			"max_connections" : 10,
+			"name" : "sphinx_index",
+			"type" : "sphinx"
+		}
+	]
+}

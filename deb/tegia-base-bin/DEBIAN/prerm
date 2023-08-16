@@ -1,0 +1,62 @@
+#!/bin/bash
+
+set -e
+. /usr/share/debconf/confmodule
+
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+RESET=`tput sgr0`
+
+
+#==================================================================================
+mysql_password() 
+#==================================================================================
+{
+    # Получаем пароль от MySQL
+    string=$(sudo cat /etc/mysql/debian.cnf)
+    regsubstring="password"
+    passwd="${string#*password}"
+    passwd="${passwd%%socket*}"
+    len="$((${#passwd}-4))"
+    passwd="${passwd:3:$len}"
+    echo $passwd
+}
+
+
+case "$1" in
+#================================================================================
+remove)
+#================================================================================
+
+	db_get tegia/setup-mode
+	SETUP_MODE="$RET"
+
+	# Удалим конфигурацию 
+	tegia-config --remove base
+
+    # Очистим БД
+    export MYSQL_PWD=$(mysql_password)
+    mysql -u  debian-sys-maint < /etc/tegia/base/db/uninstall.sql
+
+;;
+#================================================================================
+*)
+#================================================================================
+    echo "postrm called with unknown argument \`$1'" >&2
+    exit 0
+;;
+esac
+
+
+exit 0
+
+
+
+
+
+
+
+
+
+
+

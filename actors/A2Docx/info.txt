@@ -1,0 +1,5 @@
+https://github.com/docwire/doctotext
+https://github.com/totravel/minidocx
+https://github.com/amiremohamadi/DuckX
+
+

@@ -1,0 +1,8 @@
+Package: tegia-base-bin
+Version: 2.0.0
+Architecture: all
+Maintainer: Tegia LLC <contact@tegia.ru>
+Depends: tegia-node
+Conflicts: tegia-base-source
+Origin: http://tegia.ru
+Description: Tegia Base configuration (binary package)

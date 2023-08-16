@@ -1,0 +1,65 @@
+#!/bin/bash
+
+set -e
+. /usr/share/debconf/confmodule
+
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+RESET=`tput sgr0`
+
+#echo "${RED}postinst $1${RESET}"
+
+
+#==================================================================================
+mysql_password() 
+#==================================================================================
+{
+    # Получаем пароль от MySQL
+    string=$(sudo cat /etc/mysql/debian.cnf)
+    regsubstring="password"
+    passwd="${string#*password}"
+    passwd="${passwd%%socket*}"
+    len="$((${#passwd}-4))"
+    passwd="${passwd:3:$len}"
+    echo $passwd
+}
+
+case "$1" in
+#================================================================================
+configure)
+#================================================================================
+
+    # Определим в каком режиме устанавливается система
+    db_get tegia/setup-mode
+    SETUP_MODE="$RET"
+
+    # Создаем таблицы в БД
+    export MYSQL_PWD=$(mysql_password)
+    mysql -u  debian-sys-maint < /etc/tegia/base/db/install.sql
+
+	# Включим конфигурацию
+	tegia-config --add /etc/tegia/base/bin/base.config.json 
+;;
+#================================================================================
+*)
+#================================================================================
+    echo "postrm called with unknown argument \`$1'" >&2
+    exit 0
+;;
+esac
+
+
+exit 0
+
+
+
+
+
+
+
+
+echo "${GREEN}============================================================="
+echo "Установка tegia-http завершена"	
+echo "=============================================================${RESET}"
+
+exit 0

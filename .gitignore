@@ -1,0 +1,17 @@
+.vscode
+
+/actors/A2Sphinx/configs/_all_index.conf
+/actors/A2Sphinx/configs/indexes/*.conf
+
+/bin/*.o
+/bin/*.so
+/bin/base.config.json
+
+/deb/tegia-base-bin/etc/tegia/base/*
+/deb/*.deb
+
+/docs/doxygen/html/*
+/docs/doxygen/latex/*
+/docs/doxygen/man/*
+
+/vendors/*

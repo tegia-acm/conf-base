@@ -1,0 +1,110 @@
+#!/bin/bash
+
+set -e
+. /usr/share/debconf/confmodule
+
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+RESET=`tput sgr0`
+
+#echo "${RED}postinst $1${RESET}"
+
+
+#==================================================================================
+mysql_password() 
+#==================================================================================
+{
+    # Получаем пароль от MySQL
+    string=$(sudo cat /etc/mysql/debian.cnf)
+    regsubstring="password"
+    passwd="${string#*password}"
+    passwd="${passwd%%socket*}"
+    len="$((${#passwd}-4))"
+    passwd="${passwd:3:$len}"
+    echo $passwd
+}
+
+
+#==================================================================================
+git_clone()
+#==================================================================================
+{
+    param=true
+    while [ param ]
+    do
+        RESULT=$(git clone "$1" "$2" 2>&1 || true)
+    
+        echo " "
+        echo $RESULT
+
+        if [ -d "$2" ]
+           then
+              break
+           else
+              echo "${RED}[!] Репозиторий не выгружен. Повторите ввод логина и пароля${RESET}"   
+              echo " "
+        fi
+
+    done 
+    chown $SUDO_USER:$SUDO_USER -R $2
+    echo "${GREEN}[!] Репозиторий выгружен${RESET}" 
+}
+
+case "$1" in
+#================================================================================
+configure)
+#================================================================================
+
+
+#   -----------------------------------------------------------------------------
+#   Определим в каком режиме устанавливается система
+#   -----------------------------------------------------------------------------
+    db_get tegia/setup-mode
+    SETUP_MODE="$RET"
+
+#   -----------------------------------------------------------------------------
+#   Выгружаем репозиторий
+#   -----------------------------------------------------------------------------
+    cd /home/$SUDO_USER
+    mkdir -p tegia
+    mkdir -p tegia/configurations
+    cd tegia/configurations
+    git_clone "https://gitlab.com/tegia-acm/configurations/base.git" "/home/$SUDO_USER/tegia/configurations/base"
+
+#   -----------------------------------------------------------------------------
+#   Устанавливаем библиотеки
+#   -----------------------------------------------------------------------------
+    cd /home/$SUDO_USER/tegia/configurations/base
+    mkdir -p vendors
+    cd vendors
+
+    git clone https://github.com/staticlibs/ccronexpr.git
+
+#   -----------------------------------------------------------------------------
+#   Создаем таблицы в БД
+#   -----------------------------------------------------------------------------
+    export MYSQL_PWD=$(mysql_password)
+    mysql -u  debian-sys-maint < /home/$SUDO_USER/tegia/configurations/base/db/install.sql
+
+#   -----------------------------------------------------------------------------
+#   Компилируем конфигурацию
+#   -----------------------------------------------------------------------------
+    cd /home/$SUDO_USER/tegia/configurations/base/bin
+    make
+
+
+	# Включим конфигурацию
+	# tegia-config --add /etc/tegia/base/bin/base.config.json 
+;;
+#================================================================================
+*)
+#================================================================================
+    echo "postrm called with unknown argument \`$1'" >&2
+    exit 0
+;;
+esac
+
+
+echo "${GREEN}Установка tegia-base-source завершена${RESET}"
+
+exit 0
