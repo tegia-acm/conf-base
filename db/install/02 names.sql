@@ -7,7 +7,7 @@ SET time_zone = "+00:00";
 --
 --
 
-USE `tegia_core`;
+USE `{DB_PREFIX}_tegia_core`;
 
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
@@ -438,6 +438,8 @@ INSERT IGNORE INTO `names` (`_id`, `ru_name`, `sex`, `wiki`, `description`) VALU
 (396, 'Ислам', 1, 'https://ru.wikipedia.org/wiki/%D0%98%D1%81%D0%BB%D0%B0%D0%BC_(%D0%B8%D0%BC%D1%8F)', '{}'),
 (397, 'Левон', 1, 'https://ru.wikipedia.org/wiki/%D0%9B%D0%B5%D0%B2%D0%BE%D0%BD', '{}');
 
+
+ALTER TABLE `names` ADD `valid` INT NOT NULL DEFAULT '1' AFTER `description`; 
 
 
 COMMIT;

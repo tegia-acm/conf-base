@@ -1,0 +1,9 @@
+[Wed Feb 10 14:00:37.021 2021] [29136] watchdog: main process 29137 forked ok
+[Wed Feb 10 14:00:37.021 2021] [29137] listening on all interfaces, port=9312
+[Wed Feb 10 14:00:37.021 2021] [29137] listening on all interfaces, port=9306
+[Wed Feb 10 14:00:37.022 2021] [29137] accepting connections
+[Wed Feb 10 14:00:37.022 2021] [29147] prereading 0 indexes
+[Wed Feb 10 14:00:37.022 2021] [29147] prereaded 0 indexes in 0.000 sec
+[Wed Feb 10 14:00:41.778 2021] [29137] caught SIGTERM, shutting down
+[Wed Feb 10 14:00:41.878 2021] [29137] shutdown complete
+[Wed Feb 10 14:00:41.879 2021] [29136] watchdog: main process 29137 exited cleanly (exit code 0), shutting down

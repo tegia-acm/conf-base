@@ -64,16 +64,11 @@
 		},
 		{
 			"type": "A2Sphinx",
-			"name": "base/sphinx"
-		}
-	],
-	"init":
-	[
-		{
-			"actor": "scheduler",
-			"action": "/run",
-			"message":
-			{    }
+			"name": "base/sphinx",
+			"data":
+			{
+				"path": "{PATH_TO_SPHINX}"
+			}
 		}
 	],
 	"db":

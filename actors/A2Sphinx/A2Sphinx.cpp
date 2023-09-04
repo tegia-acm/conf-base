@@ -10,16 +10,24 @@ A2Sphinx::A2Sphinx(
 	const std::string &name, 
 	nlohmann::json &data):tegia::actors::actor_base(ACTOR_TYPE, name, data)
 {
+	std::cout << _YELLOW_ << std::endl;
+	std::cout << data << std::endl;
+	std::cout << _BASE_TEXT_ << std::endl;
+
+	//
+	// Определяем пути
+	//
+
+	this->paths.base = data["path"].get<std::string>();
+	this->paths.bin = this->paths.base + "/sphinx-3.1.1/bin";
+	this->paths.data = this->paths.base + "/sphinxdata";
+	this->paths.config = this->paths.base + "/configs";
+
+	// bash /home/igor/tegia/configurations/conf-base/actors/A2Sphinx/generate_conf.sh /home/igor/tegia/sphinx/configs /home/igor/tegia/sphinx/sphinxdata /home/igor/tegia/sphinx/sphinx-3.1.1/bin
+	
 	//
 	// Проверяем запущен ли sphinx search
 	//
-
-	auto node_conf = tegia::conf::get("node");
-	this->paths.base = tegia::conf::path("base") + "/actors/A2Sphinx";
-	this->paths.bin = (*node_conf)["/sphinx/path"_json_pointer]->get<std::string>();
-	this->paths.data = (*node_conf)["/sphinx/data"_json_pointer]->get<std::string>();
-	this->paths.config = (*node_conf)["/sphinx/configs"_json_pointer]->get<std::string>();
-
 	
 	if( std::filesystem::exists( this->paths.data + "/searchd.pid" ) == false)
 	{

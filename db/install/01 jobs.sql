@@ -7,7 +7,7 @@ SET time_zone = "+00:00";
 --
 --
 
-USE `tegia_core`;
+USE `{DB_PREFIX}_tegia_core`;
 
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
