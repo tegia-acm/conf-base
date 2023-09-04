@@ -64,8 +64,9 @@ ln -s $conf_base_path/actors/A2Sphinx/sphinx/generate_conf.sh $tegia_folder/sphi
 # ////////////////////////////////////////////////////////////////////////////////
 
 
-mkdir -p ../vendors
-cd ../vendors
+cd $conf_base_path
+mkdir -p vendors
+cd vendors
 git clone https://github.com/staticlibs/ccronexpr.git
 
 
