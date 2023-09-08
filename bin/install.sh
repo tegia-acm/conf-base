@@ -30,9 +30,7 @@ conf_base_path=$(realpath ../)
 echo "$conf_base_path"
 
 read -rp "Укажите каталог установки tegia-node [/home/$USER/tegia]: " tegia_folder
-if [[ -z "$tegia_folder" ]]; then
-    tegia_folder="/home/$USER/tegia"
-fi
+tegia_folder="/tegia"
 
 #
 # Install Sphinx Search
