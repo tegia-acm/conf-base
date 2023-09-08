@@ -29,7 +29,7 @@ _ERR_="${RED}[ERR] ${RESET}"
 conf_base_path=$(realpath ../)
 echo "$conf_base_path"
 
-read -rp "Укажите каталог установки tegia-node [/home/$USER/tegia]: " tegia_folder
+read -rp "Укажите каталог установки tegia-node [/tegia]: " tegia_folder
 tegia_folder="/tegia"
 
 #
