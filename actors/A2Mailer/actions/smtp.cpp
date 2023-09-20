@@ -240,8 +240,10 @@ std::string A2Mailer::smtp(const std::shared_ptr<message_t> &message, const nloh
 	
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK)
-		fprintf(stderr, "curl_easy_perform() failed: %s\n",
-				curl_easy_strerror(res));
+			LERROR("smtp: error send message to '" << _to << "' code = '" << res << "'\n'" 
+				<< curl_easy_strerror(res) << "'")
+		else
+			LNOTICE("smtp: success send message to '" << _to << "'")
 		
 		curl_slist_free_all(recipients);
 		curl_easy_cleanup(curl);	
