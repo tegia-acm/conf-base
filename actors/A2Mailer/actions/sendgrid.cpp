@@ -68,11 +68,11 @@ std::string A2Mailer::sendgrid(const std::shared_ptr<message_t> &message, const 
 	// Отправляем письмо
 	//
 	
-	auto http = new tegia::http::client();
-	http->set_header("Authorization","Bearer " + this->emails[_from]->sendgrid.api_key);
-	http->set_header("Content-Type","application/json ");
+	tegia::http::client http{};
+	http.set_header("Authorization","Bearer " + this->emails[_from]->sendgrid.api_key);
+	http.set_header("Content-Type","application/json ");
 
-	int res = http->post("https://api.sendgrid.com/v3/mail/send",_data.dump());
+	int res = http.post("https://api.sendgrid.com/v3/mail/send",_data.dump());
 
 	switch(res)
 	{
@@ -84,7 +84,7 @@ std::string A2Mailer::sendgrid(const std::shared_ptr<message_t> &message, const 
 
 		default:
 		{
-			LERROR("error send message to '" << email << "' code = " << res << "\n" << http->response->data)
+			LERROR("error send message to '" << email << "' code = " << res << "\n" << http.response->data)
 
 			// std::cout << "status = " << res << std::endl;
 			// std::cout << http->response->data << std::endl;
@@ -100,8 +100,6 @@ std::string A2Mailer::sendgrid(const std::shared_ptr<message_t> &message, const 
 		}
 		break;
 	}
-
-	delete http;
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	return core::cast<std::string>(_STATUS_);
