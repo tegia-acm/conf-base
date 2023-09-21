@@ -31,14 +31,14 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 	
 	try
 	{
-		this->send_email_validator.validate(message->data);
+		this->email_task_validator.validate(message->data);
 	}
 
 	catch(const std::exception& e)
 	{
-		message->data["status"] = 400;
-		message->data["error"]["code"] = 1;
-		message->data["error"]["info"] = e.what();
+		message->data["task"]["status"] = 400;
+		message->data["task"]["error"]["code"] = 1;
+		message->data["task"]["error"]["info"] = e.what();
 
 		LERROR("[400] DATA NOT VALID \n" << message->data.dump());
 
@@ -53,9 +53,9 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 	auto pos = this->emails.find(_from);
 	if(pos == this->emails.end())
 	{
-		message->data["status"] = 404;
-		message->data["error"]["code"] = 1;
-		message->data["error"]["info"] = "email '" + _from + "' configs not found";
+		message->data["task"]["status"] = 404;
+		message->data["task"]["error"]["code"] = 1;
+		message->data["task"]["error"]["info"] = "email '" + _from + "' configs not found";
 
 		LERROR("[404] EMAIL NOT FOUND \n" << message->data.dump());
 
