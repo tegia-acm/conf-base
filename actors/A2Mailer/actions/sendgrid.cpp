@@ -88,9 +88,9 @@ std::string A2Mailer::sendgrid(const std::shared_ptr<message_t> &message, const 
 		{
 			message->data["task"]["status"] = 500;
 			message->data["task"]["error"]["code"] = res;
-			message->data["task"]["error"]["info"] = http->response->data;
+			message->data["task"]["error"]["info"] = http.response->data;
 
-			LERROR("error send message to '" << email << "' code = " << res << "\n" << http->response->data)
+			LERROR("error send message to '" << email << "' code = " << res << "\n" << http.response->data)
 
 			// std::cout << "status = " << res << std::endl;
 			// std::cout << http->response->data << std::endl;
