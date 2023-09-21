@@ -84,8 +84,15 @@ A2Mailer::A2Mailer(
 
 	for(auto it = data["templates"].begin(); it != data["templates"].end(); it++)
 	{
-		this->templates.insert({(*it)["name"].get<std::string>(),(*it)});
+		if (!validate_template(*it))
+			continue;
+
+		auto const& current_template = std::make_pair((*it)["name"].get<std::string>(), (*it));
+		this->templates.insert(current_template);
 	}
+
+	if (this->templates.empty())
+		LERROR("A2Mailer: no templates were found in config")
 
 	//
 	// Читаем настройки для emails
@@ -93,12 +100,15 @@ A2Mailer::A2Mailer(
 
 	for(auto it = data["emails"].begin(); it != data["emails"].end(); it++)
 	{
-		this->emails.insert({(*it)["email"].get<std::string>(),std::make_shared<BASE::MAIL>(*it) });
+		auto const& current_email = std::make_pair((*it)["email"].get<std::string>(), std::make_shared<BASE::MAIL>(*it));
+		this->emails.insert(current_email);
 	}
 
-	std::cout << "email size = " << this->emails.size() << std::endl;
-
-}; 
+	if (this->emails.empty())
+		LERROR("A2Mailer: no emails were found in config")
+	else
+		std::cout << "email size = " << this->emails.size() << std::endl;
+};
 
 A2Mailer::~A2Mailer() { };
 
@@ -133,3 +143,43 @@ std::string A2Mailer::get_templates(const std::shared_ptr<message_t> &message, c
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 
+bool A2Mailer::validate_template(const nlohmann::json &data)
+{
+	auto const template_name_it = data.find("name");
+	if (template_name_it == data.cend())
+	{
+		LERROR("A2Mailer: actor '" << this->name << "': template name not found")
+		return false;
+	}
+
+	const auto template_name = template_name_it->get<std::string>();
+	const std::string error_prefix = "A2Mailer: actor '" + this->name + "', template '" + template_name;
+	
+	if (!std::filesystem::is_regular_file("./email_templates/" + template_name + ".tmpl"))
+	{
+		LERROR(error_prefix << "': template file not found")
+		return false;
+	}
+
+	auto const& sender_type_it = data.find("type");
+	if (sender_type_it == data.cend())
+	{
+		LERROR(error_prefix << "': no sender type")
+		return false;
+	}
+
+	auto const sender_type_val = sender_type_it->get<std::string>();
+	if (sender_type_val.empty( ))
+	{
+		LERROR(error_prefix << "': sender type is empty")
+		return false;
+	}
+
+	if (BASE::supported_senders.find(sender_type_val) == BASE::supported_senders.cend())
+	{
+		LERROR(error_prefix << "': sender type '" << sender_type_val << "' is not supported")
+		return false;
+	}
+
+	return true;
+}
