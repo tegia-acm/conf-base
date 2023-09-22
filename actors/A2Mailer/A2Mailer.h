@@ -13,7 +13,6 @@
 	#include <filesystem>
 
 	#include <queue>
-	#include <unordered_set>
 	#include <curl/curl.h>
 
 //	TEGIA 
@@ -78,11 +77,6 @@ struct MAIL
 	};
 };
 
-const std::unordered_set<std::string> supported_senders
-{
-	"smtp",
-	"sendgrid"
-};
 
 }	// END namespace BASE
 
@@ -122,8 +116,7 @@ class A2Mailer: public tegia::actors::actor_base
 		// ----------------------------------------------------------------------------------   
 
 		nlohmann::json_schema::json_validator email_task_validator;
-
-		bool validate_template(const nlohmann::json &data);
+		nlohmann::json_schema::json_validator config_validator;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
