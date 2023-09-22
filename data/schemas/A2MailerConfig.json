@@ -6,7 +6,7 @@
 	{
 		"emails":
 		{
-			"description": "email'ы, с которых возможно отправить письмо",
+			"description": "Email'ы, с которых возможно отправить письмо",
 			"type": "array",
 			"minItems": 1,
 			"items":
@@ -17,7 +17,7 @@
 				{
 					"email":
 					{
-						"description": "email, с которого отправляется письмо",
+						"description": "Email, с которого отправляется письмо",
 						"type": "string"
 					},
 					"smtp":
@@ -67,6 +67,7 @@
 				{
 					"name":
 					{
+						"description": "Название шаблона (совпадает с именем файла)",
 						"type": "string"
 					},
 					"type":
