@@ -81,13 +81,14 @@ A2Mailer::A2Mailer(
 	//
 	// Валидатор конфиги
 	//
-	this->email_task_validator.set_root_schema(
+	nlohmann::json_schema::json_validator config_validator;
+	config_validator.set_root_schema(
 		core::json::file(tegia::conf::path("base") + "/data/schemas/A2MailerConfig.json")
 	);
 
 	try
 	{
-		this->email_task_validator.validate(data);
+		config_validator.validate(data);
 	}
 	catch(const std::exception& e)
 	{

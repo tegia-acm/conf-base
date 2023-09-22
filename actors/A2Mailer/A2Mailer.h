@@ -116,7 +116,6 @@ class A2Mailer: public tegia::actors::actor_base
 		// ----------------------------------------------------------------------------------   
 
 		nlohmann::json_schema::json_validator email_task_validator;
-		nlohmann::json_schema::json_validator config_validator;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
