@@ -25,6 +25,17 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 {
 	/////////////////////////////////////////////////////////////////////////////////////
 
+	auto create_error_info = [&message](int status, const std::string& task_msg, const std::string& log_msg)
+	{
+		message->data["task"]["status"] = status;
+		message->data["task"]["error"]["code"] = 1;
+		message->data["task"]["error"]["info"] = task_msg;
+
+		LERROR(log_msg << message->data.dump());
+
+		return std::to_string(status);
+	};
+
 	//
 	// Валидируем формат задачи
 	//
@@ -36,13 +47,7 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 
 	catch(const std::exception& e)
 	{
-		message->data["task"]["status"] = 400;
-		message->data["task"]["error"]["code"] = 1;
-		message->data["task"]["error"]["info"] = e.what();
-
-		LERROR("[400] DATA NOT VALID \n" << message->data.dump());
-
-		return "400";
+		return create_error_info(400, e.what(), "[400] DATA NOT VALID\n");
 	}
 
 	//
@@ -53,30 +58,24 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 	auto pos = this->emails.find(_from);
 	if(pos == this->emails.end())
 	{
-		message->data["task"]["status"] = 404;
-		message->data["task"]["error"]["code"] = 1;
-		message->data["task"]["error"]["info"] = "email '" + _from + "' configs not found";
-
-		LERROR("[404] EMAIL NOT FOUND \n" << message->data.dump());
-
-		return "404";
+		const std::string msg = "email '" + _from + "' configs not found";
+		return create_error_info(404, msg, "[404] EMAIL NOT FOUND\n");
 	}
 	
 	//
 	// По шаблону определяем способ отправки
 	// 
 
-	std::string _template = message->data["task"]["data"]["template"].get<std::string>();
+	const std::string _template = message->data["task"]["data"]["template"].get<std::string>();
 	auto it = this->templates.find(_template);
 	if(it == this->templates.end())
 	{
-		// TODO: error!
-
-		std::cout << _ERR_TEXT_ << "not found template '" + _template + "'" << std::endl;
-		exit(0);
+		const std::string msg = "template not found '" + _template + "'";
+		return create_error_info(404, msg, "[404] TEMPLATE NOT FOUND\n");
 	}
 
-	switch(tegia::crypt::crc32(it->second["type"].get<std::string>()))
+	auto const sender_type = it->second["type"].get<std::string>();
+	switch(tegia::crypt::crc32(sender_type))
 	{
 		//
 		// smtp
@@ -101,8 +100,8 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 
 		default:
 		{
-			std::cout << it->second << " " << tegia::crypt::crc32(it->second) << std::endl;
-			exit(0);
+			const std::string msg = "unsupported sender type: " + sender_type;
+			return create_error_info(406, msg, "[406] UNSUPPORTED SENDER TYPE\n");
 		}
 		break;
 	}
