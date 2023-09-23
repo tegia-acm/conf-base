@@ -71,12 +71,30 @@ A2Mailer::A2Mailer(
 { 
 
 	//
-	// Валидатор
+	// Валидатор задач
 	//
 
 	this->email_task_validator.set_root_schema(
 		core::json::file(tegia::conf::path("base") + "/data/schemas/task.json")
 	);
+
+	//
+	// Валидатор конфиги
+	//
+	nlohmann::json_schema::json_validator config_validator;
+	config_validator.set_root_schema(
+		core::json::file(tegia::conf::path("base") + "/data/schemas/A2MailerConfig.json")
+	);
+
+	try
+	{
+		config_validator.validate(data);
+	}
+	catch(const std::exception& e)
+	{
+		LERROR("A2Mailer, actor '" << name << "': " << e.what())
+		throw;
+	}
 	
 	//
 	// Читаем шаблоны
