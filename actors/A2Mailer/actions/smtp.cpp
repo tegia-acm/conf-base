@@ -82,8 +82,15 @@ std::string parse_template(const std::string &template_path, const nlohmann::jso
         }
     }
     in.close();     // закрываем файл
-
-	int state = 0;
+	enum class BRACKETS_STATES
+	{
+		before1OpBr,
+		before2OpBr,
+		before1ClBr,
+		before2ClBr,
+		after2ClBr,
+	};
+	BRACKETS_STATES state = BRACKETS_STATES::before1OpBr;
 	size_t pos = 0;
 	size_t len = tmpl.length();
 
@@ -95,11 +102,11 @@ std::string parse_template(const std::string &template_path, const nlohmann::jso
 	{
 		switch(state)
 		{
-			case 0:
+			case BRACKETS_STATES::before1OpBr:
 			{
 				if(tmpl[pos] == U'[')
 				{
-					state = 1;
+					state = BRACKETS_STATES::before2OpBr;
 				}
 				else
 				{
@@ -109,27 +116,27 @@ std::string parse_template(const std::string &template_path, const nlohmann::jso
 			}
 			break;
 
-			case 1:
+			case BRACKETS_STATES::before2OpBr:
 			{
 				if(tmpl[pos] == U'[')
 				{
-					state = 10;
+					state = BRACKETS_STATES::before1ClBr;
 					start_tag = pos + 1;
 				}
 				else
 				{
-					state = 0;
+					state = BRACKETS_STATES::before1OpBr;
 				}
 				pos++;
 			}
 			break;
 
-			case 10:
+			case BRACKETS_STATES::before1ClBr:
 			{
 				if(tmpl[pos] == U']')
 				{
 					end_tag = pos;
-					state = 20;
+					state = BRACKETS_STATES::before2ClBr;
 				}
 				else
 				{
@@ -139,11 +146,11 @@ std::string parse_template(const std::string &template_path, const nlohmann::jso
 			}
 			break;
 
-			case 20:
+			case BRACKETS_STATES::before2ClBr:
 			{
 				if(tmpl[pos] == U']')
 				{
-					state = 30;
+					state = BRACKETS_STATES::after2ClBr;
 				}
 				else
 				{
@@ -153,7 +160,7 @@ std::string parse_template(const std::string &template_path, const nlohmann::jso
 			}
 			break;
 
-			case 30:
+			case BRACKETS_STATES::after2ClBr:
 			{
 				std::string _tag = tegia::string::u32str_to_str(tag);
 				nlohmann::json::json_pointer ptr(_tag);
@@ -171,7 +178,7 @@ std::string parse_template(const std::string &template_path, const nlohmann::jso
 				}
 
 				tag.clear();
-				state = 0;
+				state = BRACKETS_STATES::before1OpBr;
 
 				pos++;
 			}

@@ -75,14 +75,19 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 		std::cout << _ERR_TEXT_ << "not found template '" + _template + "'" << std::endl;
 		exit(0);
 	}
-
-	switch(tegia::crypt::crc32(it->second["type"].get<std::string>()))
+	enum class SENDMODES : unsigned long
+	{
+		smtp = 60245459,
+		sendgrid = 3478885332
+	};
+	SENDMODES mode =static_cast<SENDMODES>(tegia::crypt::crc32(it->second["type"].get<std::string>()));
+	switch(mode)
 	{
 		//
 		// smtp
 		//
 
-		case 60245459:
+		case  SENDMODES::smtp:
 		{
 			message->callback.push({this->name,"/send/smtp"});
 		}
@@ -92,7 +97,7 @@ std::string A2Mailer::send(const std::shared_ptr<message_t> &message, const nloh
 		// sendgrid
 		//
 
-		case 3478885332:
+		case SENDMODES::sendgrid:
 		{
 			message->data["task"]["data"]["template_id"] = it->second["id"].get<std::string>();
 			message->callback.push({this->name,"/send/sendgrid"});
