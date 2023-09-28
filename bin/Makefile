@@ -22,6 +22,7 @@ base:
 	make libA2Mailer
 	make libA2Names
 	make libA2Sphinx
+	make libA2Example
 
 # =============================================================================================================
 #
@@ -125,3 +126,8 @@ libA2Sphinx:
 	g++ -c -o A2Sphinx.o              ../actors/A2Sphinx/A2Sphinx.cpp $(Flag) -fPIC
 	g++ -shared -fPIC -o libA2Sphinx.so         \
 	    A2Sphinx.o $(Flag)
+
+libA2Example:
+	g++ -c -o A2Example.o              ../actors/A2Example/A2Example.cpp $(Flag) -fPIC
+	g++ -shared -fPIC -o libA2Example.so         \
+	    A2Example.o $(Flag)
