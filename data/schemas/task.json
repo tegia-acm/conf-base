@@ -1,0 +1,57 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "EMAIL_SEND TASK schema",
+	"type": "object",
+	"properties": 
+	{
+		"task":
+		{
+			"type": "object",
+			"properties":
+			{
+				"uuid":
+				{
+					"description": "Уникальный идентификатор задачи",
+					"type": "string",
+					"pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+				},
+				"type":
+				{
+					"description": "Тип задачи",
+					"type": "string",						
+					"pattern": "EMAIL_SEND"
+				},
+				"data":
+				{
+					"type": "object",
+					"properties":
+					{
+						"from":
+						{
+							"description": "email, от которого отправляется письмо",
+							"type": "string"								
+						},
+						"to":
+						{
+							"description": "email кому направляется письмо",
+							"type": "string"								
+						},
+						"subject":
+						{
+							"description": "Заголовок письма",
+							"type": "string"
+						},
+						"template":
+						{
+							"description": "Имя шаблона, по которому необходимо сформировать письмо",
+							"type": "string"
+						}
+					},
+					"required": ["from", "to", "subject", "template"]
+				}
+			},
+			"required": ["uuid", "type", "data"]
+		}
+	},
+	"required": ["task"]
+}

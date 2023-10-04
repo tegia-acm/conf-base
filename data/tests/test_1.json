@@ -1,0 +1,27 @@
+{
+	"run":
+	{
+		"task":
+		{
+			"uuid": "2a006666-155a-4c49-ad87-47077e99e046",
+			"type": "EMAIL_SEND",
+			"status": 0,
+			"data":
+			{
+				"from": "igor.tegia@yandex.ru",
+				"to": "igor@tegia.ru",
+				"subject": "myCheck | Регистрация нового пользователя",
+				"template": "mycheck-newuser",
+				"personalizations":
+				{
+					"uuid": "test"
+				}
+			}
+		}
+	},
+	"check":
+	{
+		"path": "/task/status",
+		"value": 200
+	}
+}

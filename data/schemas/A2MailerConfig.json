@@ -1,0 +1,85 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "A2Mailer config schema",
+	"type": "object",
+	"properties": 
+	{
+		"emails":
+		{
+			"description": "Email'ы, с которых возможно отправить письмо",
+			"type": "array",
+			"minItems": 1,
+			"items":
+			{
+				"type":"object",
+				"not": {"type": "null"},
+				"properties":
+				{
+					"email":
+					{
+						"description": "Email, с которого отправляется письмо",
+						"type": "string"
+					},
+					"smtp":
+					{
+						"description": "Данные для отправки сообщения по smtp",
+						"type": "object",
+						"properties":
+						{
+							"server":
+							{
+								"type": "string"
+							},
+							"password":
+							{
+								"type": "string"
+							}
+						},
+						"required": ["server", "password"]
+					},
+					"app.sendgrid.com":
+					{
+						"description": "Данные для отправки сообщения по sendgrid",
+						"type": "object",
+						"properties":
+						{
+							"api_key":
+							{
+								"type": "string"
+							}
+						},
+						"required": ["api_key"]
+					}
+				},
+				"required": ["email", "smtp", "app.sendgrid.com"]
+			}
+		},
+		"templates":
+		{
+			"description": "Шаблоны писем",
+			"type": "array",
+			"minItems": 1,
+			"items":
+			{
+				"type": "object",
+				"not": {"type": "null"},
+				"properties":
+				{
+					"name":
+					{
+						"description": "Название шаблона (совпадает с именем файла)",
+						"type": "string"
+					},
+					"type":
+					{
+						"description": "Способ отправки",
+						"type": "string",
+						"pattern": "smtp|sendgrid"
+					}
+				},
+				"required": ["name", "type"]
+			}
+		}
+	},
+	"required": ["emails", "templates"]
+}

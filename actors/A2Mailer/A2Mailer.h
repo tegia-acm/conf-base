@@ -95,10 +95,12 @@ class A2Mailer: public tegia::actors::actor_base
 		std::string send(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
 		std::string get_templates(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
 
-		std::string test_send(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
-
 		std::string smtp(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
 		std::string sendgrid(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
+
+		std::string test_run(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
+		std::string test_check(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params);
+
 
 	private:
 
@@ -113,7 +115,7 @@ class A2Mailer: public tegia::actors::actor_base
 		// SUPPORT FUNCTIONS 
 		// ----------------------------------------------------------------------------------   
 
-		nlohmann::json_schema::json_validator send_email_validator;
+		nlohmann::json_schema::json_validator email_task_validator;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,12 +130,13 @@ extern "C" tegia::actors::router_base * _load_actor()
 	auto ro = new tegia::actors::router<A2Mailer>(ACTOR_TYPE);
 
 	ACTION_ROUTE2( "/send",								&A2Mailer::send);
-	ACTION_ROUTE2( "/send/test/{id_test}",				&A2Mailer::test_send);
 	ACTION_ROUTE2( "/templates",						&A2Mailer::get_templates);
-
 
 	ACTION_ROUTE2( "/send/smtp",						&A2Mailer::smtp);
 	ACTION_ROUTE2( "/send/sendgrid",					&A2Mailer::sendgrid);
+
+	ACTION_ROUTE2( "/test/{id_test}/run",				&A2Mailer::test_run);
+	ACTION_ROUTE2( "/test/{id_test}/check",				&A2Mailer::test_check);
 
 	return ro;
 };

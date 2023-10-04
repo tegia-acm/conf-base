@@ -71,68 +71,31 @@ A2Mailer::A2Mailer(
 { 
 
 	//
-	// Валидатор
+	// Валидатор задач
 	//
 
-	this->send_email_validator.set_root_schema(R"json(
-	{
-		"$schema": "http://json-schema.org/draft-07/schema#",
-		"title": "EMAIL_SEND TASK schema",
-		"type": "object",
-		"properties": 
-		{
-			"task":
-			{
-				"type": "object",
-				"properties":
-				{
-					"uuid":
-					{
-						"description": "Уникальный идентификатор задачи",
-						"type": "string",
-						"pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-					},
-					"type":
-					{
-						"description": "Тип задачи",
-						"type": "string",						
-						"pattern": "EMAIL_SEND"
-					},
-					"data":
-					{
-						"type": "object",
-						"properties":
-						{
-							"from":
-							{
-								"description": "email, от которого отправляется письмо",
-								"type": "string"								
-							},
-							"to":
-							{
-								"description": "email кому направляется письмо",
-								"type": "string"								
-							},
-							"subject":
-							{
-								"description": "Заголовок письма",
-								"type": "string"
-							},
-							"template":
-							{
-								"description": "Имя шаблона, по которому необходимо сформировать письмо",
-								"type": "string"
-							}
-						},
-						"required": ["from", "to", "subject", "template"]
-					}
-				},
-				"required": ["uuid", "type", "data"]
-			}
-		},
-		"required": ["task"]
-	})json"_json);
+	this->email_task_validator.set_root_schema(
+		core::json::file(tegia::conf::path("base") + "/data/schemas/task.json")
+	);
 
+	//
+	// Валидатор конфиги
+	//
+	nlohmann::json_schema::json_validator config_validator;
+	config_validator.set_root_schema(
+		core::json::file(tegia::conf::path("base") + "/data/schemas/A2MailerConfig.json")
+	);
+
+	try
+	{
+		config_validator.validate(data);
+	}
+	catch(const std::exception& e)
+	{
+		LERROR("A2Mailer, actor '" << name << "': " << e.what())
+		throw;
+	}
+	
 	//
 	// Читаем шаблоны
 	//
@@ -169,6 +132,9 @@ A2Mailer::~A2Mailer() { };
 #include "actions/smtp.cpp"
 #include "actions/sendgrid.cpp"
 
+#include "actions/test_run.cpp"
+#include "actions/test_check.cpp"
+
 
 std::string A2Mailer::get_templates(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params)
 {
@@ -177,54 +143,6 @@ std::string A2Mailer::get_templates(const std::shared_ptr<message_t> &message, c
 	return core::cast<std::string>(res);
 };
 
-
-
-
-
-std::string A2Mailer::test_send(const std::shared_ptr<message_t> &message, const nlohmann::json &route_params)
-{
-	int id_test = core::cast<int>(route_params["id_test"].get<std::string>());
-	switch(id_test)
-	{
-		case 1:
-		{
-			nlohmann::json personalization;
-			personalization["to"].push_back("{\"email\":\"goryachev-igor@yandex.ru\"}"_json);
-			personalization["dynamic_template_data"]["full_name"] = "Горячев Игорь";
-			personalization["dynamic_template_data"]["confirm_url"] = "http://dit.local/confirm/sfds-sdfds-sdfdsf-sdfdsf";
-			personalization["dynamic_template_data"]["test"] = "fuck the system";
-			personalization["dynamic_template_data"]["news"].push_back("{\"text\":\"test news 01\"}"_json);
-			personalization["dynamic_template_data"]["news"].push_back("{\"text\":\"test news 02\"}"_json);
-			
-			nlohmann::json mail;
-			mail["mail"]["from"]["email"] = "igor@tegia.ru";
-			mail["mail"]["personalizations"].push_back(personalization);
-
-			tegia::message::send(this->name,"/send/email_confirm_template",mail);
-		}
-		break;
-
-		case 2:
-		{
-			nlohmann::json personalization;
-			personalization["to"].push_back("{\"email\":\"goryachev-igor@yandex.ru\"}"_json);
-			personalization["dynamic_template_data"]["company"] = "ООО \"Рога и копыта\"";
-			personalization["dynamic_template_data"]["person"] = "Горячев Игорь";
-			personalization["dynamic_template_data"]["email"] = "test@test.ru";
-			personalization["dynamic_template_data"]["phone"] = "+79109201020";
-			personalization["dynamic_template_data"]["comment"] = "Все хочу!!!";
-			
-			nlohmann::json mail;
-			mail["mail"]["from"]["email"] = "igor@tegia.ru";
-			mail["mail"]["personalizations"].push_back(personalization);
-
-			tegia::message::send(this->name,"/send/new_landing_order",mail);
-		}
-		break;
-	}
-
-	return "ok";
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                        //

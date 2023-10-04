@@ -240,8 +240,18 @@ std::string A2Mailer::smtp(const std::shared_ptr<message_t> &message, const nloh
 	
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK)
-		fprintf(stderr, "curl_easy_perform() failed: %s\n",
-				curl_easy_strerror(res));
+		{
+			std::string err = curl_easy_strerror(res);
+			message->data["task"]["status"] = 500;
+			message->data["task"]["error"]["code"] = res;
+			message->data["task"]["error"]["info"] = err;
+			LERROR("smtp: error send message to '" << _to << "' code = '" << res << "'\n'" << err << "'")
+		}
+		else
+		{
+			message->data["task"]["status"] = 200;
+			LNOTICE("smtp: success send message to '" << _to << "'")
+		}
 		
 		curl_slist_free_all(recipients);
 		curl_easy_cleanup(curl);	

@@ -1,0 +1,28 @@
+{
+	"run":
+	{
+		"task":
+		{
+			"uuid": "2a006666-155a-4c49-ad87-47077e99e046",
+			"type": "EMAIL_SEND",
+			"status": 0,
+			"data":
+			{
+				"from": "noreply@my-check.ru",
+				"to": "igor@tegia.ru",
+				"subject": "myCheck | Регистрация нового пользователя",
+				"template": "mycheck_email_confirm",
+				"personalizations":
+				{
+					"full_name": "Горячев Игорь Александрович",
+					"confirm_url": "http://app.my-check.ru"
+				}
+			}
+		}
+	},
+	"check":
+	{
+		"path": "/task/status",
+		"value": 200
+	}
+}
