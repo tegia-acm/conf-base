@@ -29,6 +29,7 @@ A2Sphinx::A2Sphinx(
 	// Проверяем запущен ли sphinx search
 	//
 	
+	/*
 	if( std::filesystem::exists( this->paths.data + "/searchd.pid" ) == false)
 	{
 		std::cout << _ERR_TEXT_ << "Sphinx not load" << std::endl;
@@ -44,6 +45,9 @@ A2Sphinx::A2Sphinx(
 		std::cout << "bash " +  this->paths.base + "/generate_conf.sh " + this->paths.config + " " + this->paths.data + " " + this->paths.bin << std::endl;
 		std::cout << _OK_TEXT_ << "Sphinx is load" << std::endl;
 	}
+	*/
+
+	std::cout << "bash " +  this->paths.base + "/generate_conf.sh " + this->paths.config + " " + this->paths.data + " " + this->paths.bin << std::endl;
 
 };
 

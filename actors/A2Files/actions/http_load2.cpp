@@ -95,7 +95,7 @@ std::string A2Files::http_load2(const std::shared_ptr<message_t> &message, const
 	// Настроить SSL
 	//
 
-	if(message->data.contains("/task/data/ssl"_json_pointer) == true)
+	if(message->data.contains("/task/data/ssl/cert"_json_pointer) == true)
 	{
 		http->set_sslp12(
 			message->data["/task/data/ssl/cert"_json_pointer].get<std::string>(),
@@ -126,6 +126,8 @@ std::string A2Files::http_load2(const std::shared_ptr<message_t> &message, const
 			case 35:	// CURLE_SSL_CONNECT_ERROR
 			{
 				std::this_thread::sleep_for(1s);
+
+				// TODO: механизм отложенных сообщений!
 			}
 			break;
 
