@@ -42,23 +42,32 @@ std::string A2Files::http_load2(const std::shared_ptr<message_t> &message, const
 	{
 		std::cout << _ERR_TEXT_ << e.what() << '\n';
 
+		// TODO:
+
 		message->data["status"] = 400;
 		message->data["error"]["code"] = 1;
 		message->data["error"]["info"] = e.what();
+
+		message->data["task"]["status"] = 400;
+		message->data["task"]["error"]["code"] = 1;
+		message->data["task"]["error"]["info"] = e.what();
+		
 		return "400";
 	}
 
-	std::cout << message->data << std::endl;
+	// std::cout << message->data << std::endl;
 
 	std::string url = message->data["task"]["data"]["url"].get<std::string>();
 	std::string filename = message->data["task"]["data"]["filename"].get<std::string>();
+
+	std::filesystem::path file(filename);
+	std::filesystem::path dir = file.parent_path();
+	std::filesystem::path tmp_file(dir / std::string(tegia::random::uuid() + ".tmp"));
 
 	//
 	// Проверить существование файла, который необходимо скачать
 	// 
 
-	std::filesystem::path file(filename);
-	std::filesystem::path dir = file.parent_path();
 
 	if(std::filesystem::is_regular_file(file) == true)
 	{
@@ -67,6 +76,12 @@ std::string A2Files::http_load2(const std::shared_ptr<message_t> &message, const
 		message->data["status"] = 200;
 		message->data["error"]["code"] = 1;
 		message->data["error"]["info"] = "file [" + filename + "] is already exists";
+
+		message->data["task"]["status"] = 200;
+		message->data["task"]["error"]["code"] = 1;
+		message->data["task"]["error"]["info"] = "file [" + filename + "] is already exists";
+
+		std::cout << _ERR_TEXT_ << "file [" << filename << "] is already exists" << std::endl;
 
 		//
 		// READ FILE SIZE
@@ -83,10 +98,11 @@ std::string A2Files::http_load2(const std::shared_ptr<message_t> &message, const
 	// Проверить существование каталога
 	//
 
+	// std::cout << "dir = " << dir.string() << std::endl; 
+
 	if(std::filesystem::is_directory(dir) == false)
 	{
 		std::filesystem::create_directories(dir);
-		// std::cout << _OK_TEXT_ << "create dir " << dir.string() << std::endl; 
 	}
 
 	auto http = std::make_shared<tegia::http::client>();
@@ -108,11 +124,13 @@ std::string A2Files::http_load2(const std::shared_ptr<message_t> &message, const
 
 	while(flag)
 	{
-		int status = http->get(url,filename);
+		int status = http->get(url,tmp_file.string()); //filename);
 		switch(status)
 		{
 			case 200:
 			{
+				std::filesystem::rename(tmp_file,file);
+
 				message->data["status"] = 0;
 				message->data["task"]["data"]["size"] = core::cast<long long int>(http->response->headers["content-length"]);
 				return "ok";
