@@ -1,4 +1,4 @@
-include ../../Makefile.variable
+include ../../../Makefile.variable
 
 CPPFLAGS += -I ~/tegia/vendors/ftpclient/FTP
 LIBS += ~/tegia/vendors/ftpclient/build/Release/lib/libftpclient.a
