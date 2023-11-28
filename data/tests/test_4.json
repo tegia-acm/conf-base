@@ -1,0 +1,23 @@
+{
+    "run":
+    {
+      "task":
+      {
+        "uuid": "2a006666-155a-4c49-ad87-47077e99e046",
+        "type": "EMAIL_SEND",
+        "status": 0,
+        "data":
+        {
+          "from": "miskamzxc@yandex.by",
+          "to": "maksimlepel@yandex.ru",
+          "subject": "Файлы не загружены",
+          "template": "loader-error"
+        }
+      }
+    },
+    "check":
+    {
+      "path": "/task/status",
+      "value": 200
+    }
+  }
